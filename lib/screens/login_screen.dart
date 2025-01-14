@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:machine_test/screens/dashboard.dart';
-import 'package:machine_test/screens/signup_screen.dart'; // Import the SignUpScreen
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dashboard.dart'; // Ensure DashboardScreen is correctly implemented
+import 'signup_screen.dart'; // Ensure SignUpScreen is correctly implemented
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -13,8 +16,66 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
-  bool _isPasswordVisible = false; // State to toggle password visibility
+  // API Service to Authenticate User
+  Future<void> authenticateUser(String username, String password) async {
+    final url = Uri.parse('https://api.accounts.vikncodes.com/api/v1/users/login');
+    final payload = {
+      'username': username,
+      'password': password,
+      'is_mobile': true,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(payload),
+      );
+
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final token = data['data']['access'];
+        final userID = data['data']['user_id'];
+        final username = data['data']['username'];
+
+        // Save Token and User Details Securely
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+        await prefs.setInt('userID', userID);
+        await prefs.setString('username', username);
+
+        print('Token and User ID successfully saved in secure storage.');
+        
+        // Optionally: Print user details as confirmation
+        print('User ID: $userID');
+        print('Username: $username');
+        print('Token: $token');
+
+        // Navigate to Dashboard after successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        );
+      } else {
+        final errorData = json.decode(response.body);
+        print('Login failed: $errorData');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login failed. Please try again.')),
+        );
+      }
+    } catch (e) {
+      print('Error during API call: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred. Please try again later.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFF0F172A), // Dark blue background
-                Color(0xFF1E293B), // Slightly lighter blue
+                Color(0xFF0F172A),
+                Color(0xFF1E293B),
               ],
             ),
           ),
@@ -40,19 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: TextButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.language, color: Colors.white70),
-                        label: const Text(
-                          'English',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                      ),
-                    ),
-                    const Spacer(flex: 1),
+                    const SizedBox(height: 32),
                     const Text(
                       'Login',
                       style: TextStyle(
@@ -65,14 +114,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 8),
                     const Text(
                       'Login to your vikn account',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.white54, fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
-                    // Username Field with Validation
                     TextFormField(
                       controller: _usernameController,
                       style: const TextStyle(color: Colors.white),
@@ -95,7 +140,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    // Password Field with Visibility Toggle
                     TextFormField(
                       controller: _passwordController,
                       obscureText: !_isPasswordVisible,
@@ -106,9 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         prefixIcon: const Icon(Icons.lock_outline, color: Colors.white60),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                             color: Colors.white60,
                           ),
                           onPressed: () {
@@ -134,79 +176,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          'Forgotten Password?',
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 24),
-                    // Sign In Button with Validation Check
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          // Navigate to Dashboard
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DashboardScreen(),
-                            ),
+                          setState(() => _isLoading = true);
+                          // Call the authenticateUser method
+                          await authenticateUser(
+                            _usernameController.text.trim(),
+                            _passwordController.text.trim(),
                           );
+                          setState(() => _isLoading = false);
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Sign in',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward, color: Colors.white),
-                        ],
-                      ),
-                    ),
-                    const Spacer(flex: 2),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Don't have an Account?",
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SignUpScreen(),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              'Sign up now!',
-                              style: TextStyle(color: Colors.blue),
-                            ),
-                          ),
-                        ],
-                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('Sign in'),
                     ),
                   ],
                 ),
