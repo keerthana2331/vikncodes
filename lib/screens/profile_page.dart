@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:machine_test/screens/login_screen.dart';
 
@@ -40,18 +42,21 @@ class ProfilePage extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage: AssetImage('assets/avatar.png'), // Replace with your avatar image
+                  backgroundImage: AssetImage('assets/avatar.png.png'),
                 ),
                 SizedBox(width: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'David Arnold',
-                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                      'Rabeeh',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      'david012@cabzing',
+                      'Rabeehvk@gmail.com',
                       style: TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                   ],
@@ -62,44 +67,42 @@ class ProfilePage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _infoCard('4.3 ★', '2,211 rides', Icons.star),
-                _infoCard('KYC', 'Verified', Icons.verified),
+                infoCard('4.3 ★', '2,211 rides', Icons.star),
+                infoCard('KYC', 'Verified', Icons.verified),
               ],
             ),
             SizedBox(height: 20),
-           ElevatedButton.icon(
-  onPressed: () {
-    // Navigate to the login screen and remove the current ProfilePage from the stack
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    );
-  },
-  icon: Icon(Icons.logout, color: Colors.red),
-  label: Text('Logout', style: TextStyle(color: Colors.red)),
-  style: ElevatedButton.styleFrom(
-    iconColor: Colors.black,
-    disabledBackgroundColor: Colors.red,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    side: BorderSide(color: Colors.red),
-  ),
-),
-
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                );
+              },
+              icon: Icon(Icons.logout, color: Colors.red),
+              label: Text('Logout', style: TextStyle(color: Colors.red)),
+              style: ElevatedButton.styleFrom(
+                iconColor: Colors.black,
+                disabledBackgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                side: BorderSide(color: Colors.red),
+              ),
+            ),
             Divider(color: Colors.grey, thickness: 1, height: 30),
-            _menuOption('Help', Icons.help_outline),
-            _menuOption('FAQ', Icons.question_answer),
-            _menuOption('Invite Friends', Icons.group_add),
-            _menuOption('Terms of service', Icons.article),
-            _menuOption('Privacy Policy', Icons.privacy_tip),
+            menuOption('Help', Icons.help_outline),
+            menuOption('FAQ', Icons.question_answer),
+            menuOption('Invite Friends', Icons.group_add),
+            menuOption('Terms of service', Icons.article),
+            menuOption('Privacy Policy', Icons.privacy_tip),
           ],
         ),
       ),
     );
   }
 
-  Widget _infoCard(String title, String subtitle, IconData icon) {
+  Widget infoCard(String title, String subtitle, IconData icon) {
     return Container(
       width: 150,
       padding: EdgeInsets.all(10),
@@ -111,14 +114,18 @@ class ProfilePage extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.lightBlue, size: 30),
           SizedBox(height: 8),
-          Text(title, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(title,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold)),
           Text(subtitle, style: TextStyle(color: Colors.grey, fontSize: 14)),
         ],
       ),
     );
   }
 
-  Widget _menuOption(String title, IconData icon) {
+  Widget menuOption(String title, IconData icon) {
     return ListTile(
       leading: Icon(icon, color: Colors.white),
       title: Text(title, style: TextStyle(color: Colors.white)),

@@ -1,3 +1,5 @@
+// ignore_for_file: use_super_parameters, prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:machine_test/screens/invoices.dart';
@@ -32,7 +34,6 @@ class DashboardScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -70,21 +71,14 @@ class DashboardScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => ProfilePage()),
                       );
                     },
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[800],
-                        shape: BoxShape.circle,
-                      ),
+                    child: CircleAvatar(
+                      radius: 16,
+                      backgroundImage: AssetImage('assets/avatar.png.png'),
                     ),
                   ),
-                  
                 ],
               ),
               const SizedBox(height: 24),
-
-              // Revenue Card
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -103,8 +97,9 @@ class DashboardScreen extends StatelessWidget {
                             Text(
                               'SAR 2,78,000.00',
                               style: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 16,
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -126,8 +121,6 @@ class DashboardScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-
-                    // Chart
                     SizedBox(
                       height: 160,
                       child: LineChart(
@@ -145,21 +138,20 @@ class DashboardScreen extends StatelessWidget {
                           lineBarsData: [
                             LineChartBarData(
                               spots: const [
-                                FlSpot(0, 2),
-                                FlSpot(1, 2.2),
-                                FlSpot(2, 3.9),
-                                FlSpot(3, 3),
-                                FlSpot(4, 2.8),
-                                FlSpot(5, 2.4),
-                                FlSpot(6, 2.6),
-                                FlSpot(7, 2.2),
+                                FlSpot(0, 1),
+                                FlSpot(1, 3),
+                                FlSpot(2, 1.5),
+                                FlSpot(3, 2.8),
+                                FlSpot(4, 2),
+                                FlSpot(5, 3.5),
+                                FlSpot(6, 2.2),
                               ],
                               isCurved: true,
-                              color: Colors.blue[400],
-                              barWidth: 2,
+                              color: Colors.blue,
+                              barWidth: 3,
                               belowBarData: BarAreaData(
                                 show: true,
-                                color: Colors.blue.withOpacity(0.1),
+                                color: Colors.blue.withOpacity(0.2),
                               ),
                               dotData: FlDotData(show: false),
                             ),
@@ -167,8 +159,6 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    // Date Indicators
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: List.generate(
@@ -179,17 +169,15 @@ class DashboardScreen extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: index == 1
-                                ? Colors.blue
-                                : Colors.transparent,
+                            color:
+                                index == 1 ? Colors.blue : Colors.transparent,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             '0${index + 1}',
                             style: TextStyle(
-                              color: index == 1
-                                  ? Colors.white
-                                  : Colors.grey[400],
+                              color:
+                                  index == 1 ? Colors.white : Colors.grey[400],
                             ),
                           ),
                         ),
@@ -199,8 +187,6 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Bookings Card
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -218,7 +204,8 @@ class DashboardScreen extends StatelessWidget {
                             color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.access_time, color: Colors.white),
+                          child: const Icon(Icons.access_time,
+                              color: Colors.white),
                         ),
                         const SizedBox(width: 12),
                         const Column(
@@ -247,8 +234,6 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Invoices Card (With navigation)
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -295,22 +280,25 @@ class DashboardScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => InvoicesPage()),
+                          MaterialPageRoute(
+                              builder: (context) => SalesListPage(
+                                    userID: '',
+                                    branchID: 0,
+                                  )),
                         );
                       },
-                      child: const Icon(Icons.chevron_right, color: Colors.grey),
+                      child:
+                          const Icon(Icons.chevron_right, color: Colors.grey),
                     ),
                   ],
                 ),
               ),
-
-              // Bottom Navigation
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Icon(Icons.home, color: Colors.blue[400]),
-                  const Icon(Icons.check_box_outlined, color: Colors.grey),
+                  Icon(Icons.home, color: Colors.blue),
+                  const Icon(Icons.bookmark_border, color: Colors.grey),
                   const Icon(Icons.notifications_outlined, color: Colors.grey),
                   const Icon(Icons.person_outline, color: Colors.grey),
                 ],
@@ -322,101 +310,3 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 }
-
-// // Invoices Page
-// class InvoicesPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Invoices'),
-//         backgroundColor: Colors.black,
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           children: [
-//             // Search and Filter Row
-//             Row(
-//               children: [
-//                 Expanded(
-//                   child: TextField(
-//                     decoration: InputDecoration(
-//                       hintText: 'Search',
-//                       prefixIcon: Icon(Icons.search, color: Colors.white),
-//                       filled: true,
-//                       fillColor: Colors.grey[850],
-//                       contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-//                       border: OutlineInputBorder(
-//                         borderRadius: BorderRadius.circular(8.0),
-//                         borderSide: BorderSide.none,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(width: 10.0),
-//                 ElevatedButton(
-//                   onPressed: () {
-//                     // Add filter action here
-//                   },
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.grey[850],
-//                   ),
-//                   child: const Text('Add Filters'),
-//                 ),
-//               ],
-//             ),
-//             const SizedBox(height: 20.0),
-//             // Invoice List
-//             Expanded(
-//               child: ListView(
-//                 children: [
-//                   _buildInvoiceTile('12345', 'Pending', 'Customer Name', 10000.0, Colors.red),
-//                   _buildInvoiceTile('67890', 'Invoiced', 'Customer Name', 10000.0, Colors.blue),
-//                   _buildInvoiceTile('24680', 'Cancelled', 'Customer Name', 10000.0, Colors.grey),
-//                   _buildInvoiceTile('13579', 'Pending', 'Customer Name', 10000.0, Colors.red),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//       backgroundColor: Colors.black,
-//     );
-//   }
-
-//   Widget _buildInvoiceTile(String invoiceNo, String status, String customerName, double amount, Color statusColor) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(vertical: 8.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(
-//             '#Invoice No $invoiceNo',
-//             style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-//           ),
-//           const SizedBox(height: 4.0),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Text(
-//                 customerName,
-//                 style: const TextStyle(color: Colors.white70, fontSize: 14),
-//               ),
-//               Text(
-//                 'SAR ${amount.toStringAsFixed(2)}',
-//                 style: const TextStyle(color: Colors.white, fontSize: 14),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(height: 4.0),
-//           Text(
-//             status,
-//             style: TextStyle(color: statusColor, fontSize: 14, fontWeight: FontWeight.w500),
-//           ),
-//           const Divider(color: Colors.white38),
-//         ],
-//       ),
-//     );
-//   }
-// }
